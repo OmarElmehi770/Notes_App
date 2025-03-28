@@ -12,8 +12,6 @@ class NotesScrean extends StatefulWidget {
 }
 
 SqlHelper sqlHelper = SqlHelper();
-TextEditingController titleController = TextEditingController() ;
-TextEditingController descController = TextEditingController();
 class _NotesScreanState extends State<NotesScrean> {
   @override
   Widget build(BuildContext context) {
@@ -39,12 +37,17 @@ class _NotesScreanState extends State<NotesScrean> {
         child: FutureBuilder(
           future: sqlHelper.loadNotes(),
           builder: (context, snapshot) {
+            if(snapshot.connectionState== ConnectionState.waiting){
+              return CircularProgressIndicator();
+            }
             return ListView.builder(
               itemCount: snapshot.data!.length,
               itemBuilder: (context, index) {
                 return Dismissible(
                   key: UniqueKey(),
-                  onDismissed: (direction) {},
+                  onDismissed: (direction) {
+                    sqlHelper.deleteNote(snapshot.data![index]['id']);
+                  },
                   child: Container(
                       margin: EdgeInsets.all(7),
                       height: 150,
@@ -74,7 +77,70 @@ class _NotesScreanState extends State<NotesScrean> {
                                 ],
                               ),
                               IconButton(
-                                onPressed: () {},
+                                onPressed: () {
+                                  showCupertinoDialog(
+                                    context: context,
+                                    builder: (_) {
+                                      TextEditingController titleController = TextEditingController(
+                                        text: snapshot.data![index]['title']
+                                      ) ;
+                                      TextEditingController descController = TextEditingController(
+                                        text: snapshot.data![index]['desc']
+                                      );
+                                      return CupertinoAlertDialog(
+                                        title: Text('Edit Note'),
+                                        content: Material(
+                                          color: Colors.transparent,
+                                          child: Column(
+                                            spacing: 5,
+                                            children: [
+                                              SizedBox(
+                                                height: 60,
+                                                child: TextFormField(
+                                                  controller: titleController,
+                                                  decoration: InputDecoration(
+                                                    hintText: 'title',
+                                                  ),
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                height: 60,
+                                                child: TextFormField(
+                                                  controller: descController,
+                                                  decoration: InputDecoration(
+                                                    hintText: 'description',
+                                                  ),
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        actions: [
+                                          CupertinoDialogAction(
+                                            child: Text('Cancel'),
+                                            onPressed: () {
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                          CupertinoDialogAction(
+                                            child: Text('Add'),
+                                            onPressed: () {
+                                              sqlHelper.addNote(
+                                                  Note(
+                                                      titleController.text,
+                                                      descController.text
+                                                  )
+                                              ).whenComplete((){
+                                                setState(() {});
+                                              });
+                                              Navigator.pop(context);
+                                            },
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+                                },
                                 icon: Icon(Icons.edit),
                               ),
                               Text(index.toString())
@@ -93,6 +159,8 @@ class _NotesScreanState extends State<NotesScrean> {
           showCupertinoDialog(
             context: context,
             builder: (_) {
+              TextEditingController titleController = TextEditingController() ;
+              TextEditingController descController = TextEditingController();
               return CupertinoAlertDialog(
                 title: Text('Add Note'),
                 content: Material(
