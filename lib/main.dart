@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'notes_screan.dart';
+import 'package:notes_app/sql_helpers.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SqlHelper.getDatabase();
   runApp(const MyApp());
 }
 
