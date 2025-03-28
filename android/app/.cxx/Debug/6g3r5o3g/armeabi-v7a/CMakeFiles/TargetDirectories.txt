@@ -1,0 +1,2 @@
+C:/Flutters/projects/notes_app/android/app/.cxx/Debug/6g3r5o3g/armeabi-v7a/CMakeFiles/edit_cache.dir
+C:/Flutters/projects/notes_app/android/app/.cxx/Debug/6g3r5o3g/armeabi-v7a/CMakeFiles/rebuild_cache.dir
