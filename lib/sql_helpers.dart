@@ -22,8 +22,8 @@ class SqlHelper {
       Batch batch = dp.batch();
       batch.execute('''
          CREATE TABLE notes(
-           id INTEGER PRIMARY KEY AUTOINCREMENT 
-           title TEXT
+           id INTEGER PRIMARY KEY AUTOINCREMENT, 
+           title TEXT,
            desc TEXT
          )
          ''');

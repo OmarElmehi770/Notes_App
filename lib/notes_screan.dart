@@ -1,3 +1,4 @@
+import 'package:awesome_snackbar_content/awesome_snackbar_content.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gradient_glow_border/gradient_glow_border.dart';
@@ -27,6 +28,19 @@ class _NotesScreanState extends State<NotesScrean> {
                 sqlHelper.deleteAllNotes().whenComplete(() {
                   setState(() {});
                 });
+                const snackBar = SnackBar(
+                  elevation: 0,
+                  behavior: SnackBarBehavior.fixed,
+                  backgroundColor: Colors.transparent,
+                  content: AwesomeSnackbarContent(
+                    title: 'All notes deleted',
+                    contentType: ContentType.failure,
+                    message: '',
+                  ),
+                );
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(snackBar);
               },
               icon: Icon(Icons.delete),
             ),
@@ -47,6 +61,21 @@ class _NotesScreanState extends State<NotesScrean> {
                   key: UniqueKey(),
                   onDismissed: (direction) {
                     sqlHelper.deleteNote(snapshot.data![index]['id']);
+                    setState(() {
+                    });
+                    const snackBar = SnackBar(
+                      elevation: 0,
+                      behavior: SnackBarBehavior.fixed,
+                      backgroundColor: Colors.transparent,
+                      content: AwesomeSnackbarContent(
+                        title: 'Note deleted',
+                        contentType: ContentType.failure,
+                        message: '',
+                      ),
+                    );
+                    ScaffoldMessenger.of(context)
+                      ..hideCurrentSnackBar()
+                      ..showSnackBar(snackBar);
                   },
                   child: Container(
                       margin: EdgeInsets.all(7),
@@ -56,9 +85,9 @@ class _NotesScreanState extends State<NotesScrean> {
                         borderRadius: BorderRadius.circular(20),
                         blurRadius: 0,
                         spreadRadius: 0,
-                        colors: [Colors.blue, Colors.red],
+                        colors: [Colors.black, Colors.orange,Colors.brown],
                         glowOpacity: 0,
-                        duration: Duration(milliseconds: 800),
+                        duration: Duration(milliseconds: 1000),
                         thickness: 3,
                         child: Container(
                           height: 150,
@@ -69,81 +98,114 @@ class _NotesScreanState extends State<NotesScrean> {
                             borderRadius: BorderRadius.circular(15),
                           ),
                           child: Row(
+                            mainAxisAlignment: MainAxisAlignment.start,
                             children: [
-                              Column(
-                                children: [
-                                  Text(snapshot.data![index]['title']),
-                                  Text(snapshot.data![index]['desc']),
-                                ],
+                              Padding(
+                                padding: const EdgeInsets.only(right: 5),
+                                child: Container(
+                                  child: CircleAvatar(child: Text('${index+1}',style: TextStyle(fontSize: 24),)),
+                                  height: 150,
+                                ),
                               ),
-                              IconButton(
-                                onPressed: () {
-                                  showCupertinoDialog(
-                                    context: context,
-                                    builder: (_) {
-                                      TextEditingController titleController = TextEditingController(
-                                        text: snapshot.data![index]['title']
-                                      ) ;
-                                      TextEditingController descController = TextEditingController(
-                                        text: snapshot.data![index]['desc']
-                                      );
-                                      return CupertinoAlertDialog(
-                                        title: Text('Edit Note'),
-                                        content: Material(
-                                          color: Colors.transparent,
-                                          child: Column(
-                                            spacing: 5,
-                                            children: [
-                                              SizedBox(
-                                                height: 60,
-                                                child: TextFormField(
-                                                  controller: titleController,
-                                                  decoration: InputDecoration(
-                                                    hintText: 'title',
+                              Expanded(
+                                child: Container(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(snapshot.data![index]['title'],style: TextStyle(fontSize: 24),),
+                                      Container(child: SingleChildScrollView(child: Text(snapshot.data![index]['desc']))),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              Container(
+                                height: 150,
+                                decoration: BoxDecoration(
+                                    color: Colors.green,
+                                    borderRadius: BorderRadius.circular(15)
+                                ),
+                                child: IconButton(
+                                  onPressed: () {
+                                    showCupertinoDialog(
+                                      context: context,
+                                      builder: (_) {
+                                        TextEditingController titleController = TextEditingController(
+                                          text: snapshot.data![index]['title']
+                                        ) ;
+                                        TextEditingController descController = TextEditingController(
+                                          text: snapshot.data![index]['desc']
+                                        );
+                                        return CupertinoAlertDialog(
+                                          title: Text('Edit Note'),
+                                          content: Material(
+                                            color: Colors.transparent,
+                                            child: Column(
+                                              spacing: 5,
+                                              children: [
+                                                SizedBox(
+                                                  height: 60,
+                                                  child: TextFormField(
+                                                    controller: titleController,
+                                                    decoration: InputDecoration(
+                                                      hintText: 'title',
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                              SizedBox(
-                                                height: 60,
-                                                child: TextFormField(
-                                                  controller: descController,
-                                                  decoration: InputDecoration(
-                                                    hintText: 'description',
+                                                SizedBox(
+                                                  height: 60,
+                                                  child: TextFormField(
+                                                    controller: descController,
+                                                    decoration: InputDecoration(
+                                                      hintText: 'description',
+                                                    ),
                                                   ),
                                                 ),
-                                              ),
-                                            ],
+                                              ],
+                                            ),
                                           ),
-                                        ),
-                                        actions: [
-                                          CupertinoDialogAction(
-                                            child: Text('Cancel'),
-                                            onPressed: () {
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                          CupertinoDialogAction(
-                                            child: Text('Add'),
-                                            onPressed: () {
-                                              sqlHelper.addNote(
-                                                  Note(
-                                                      titleController.text,
-                                                      descController.text
-                                                  )
-                                              ).whenComplete((){
-                                                setState(() {});
-                                              });
-                                              Navigator.pop(context);
-                                            },
-                                          ),
-                                        ],
-                                      );
-                                    },
-                                  );
-                                },
-                                icon: Icon(Icons.edit),
-                              ),
-                              Text(index.toString())
+                                          actions: [
+                                            CupertinoDialogAction(
+                                              child: Text('Cancel'),
+                                              onPressed: () {
+                                                Navigator.pop(context);
+                                              },
+                                            ),
+                                            CupertinoDialogAction(
+                                              child: Text('Edit'),
+                                              onPressed: () {
+                                                sqlHelper.updateNote(
+                                                    Note(
+                                                        titleController.text,
+                                                        descController.text,
+                                                      snapshot.data![index]['id'],
+                                                    )
+                                                ).whenComplete((){
+                                                  setState(() {});
+                                                });
+                                                Navigator.pop(context);
+                                                const snackBar = SnackBar(
+                                                  elevation: 0,
+                                                  behavior: SnackBarBehavior.fixed,
+                                                  backgroundColor: Colors.transparent,
+                                                  content: AwesomeSnackbarContent(
+                                                    title: 'Edited',
+                                                    contentType: ContentType.success,
+                                                    message: '',
+                                                  ),
+                                                );
+                                                ScaffoldMessenger.of(context)
+                                                  ..hideCurrentSnackBar()
+                                                  ..showSnackBar(snackBar);
+                                              },
+                                            ),
+                                          ],
+                                        );
+                                      },
+                                    );
+                                  },
+                                  icon: Icon(Icons.edit),
+                                ),
+                              )
                             ],
                           ),
                         ),
@@ -208,6 +270,19 @@ class _NotesScreanState extends State<NotesScrean> {
                         setState(() {});
                       });
                       Navigator.pop(context);
+                      const snackBar = SnackBar(
+                        elevation: 0,
+                        behavior: SnackBarBehavior.fixed,
+                        backgroundColor: Colors.transparent,
+                        content: AwesomeSnackbarContent(
+                          title: 'Added',
+                          contentType: ContentType.success,
+                          message: '',
+                        ),
+                      );
+                      ScaffoldMessenger.of(context)
+                        ..hideCurrentSnackBar()
+                        ..showSnackBar(snackBar);
                     },
                   ),
                 ],

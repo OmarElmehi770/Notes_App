@@ -5,6 +5,26 @@ import 'package:notes_app/sql_helpers.dart';
 
 void main() {
   WidgetsFlutterBinding.ensureInitialized();
+  // ErrorWidget.builder = (FlutterErrorDetails flutterErrorDetails){
+  //   return MaterialApp(
+  //     debugShowCheckedModeBanner : false ,
+  //     home :Scaffold(
+  //       backgroundColor: Colors.black,
+  //       body: Center(
+  //         child: Column(
+  //           mainAxisAlignment: MainAxisAlignment.center,
+  //           children: [
+  //             Icon(Icons.error_outline_outlined,color: Colors.red,size: 180,),
+  //             SizedBox(height : 20.h),
+  //             Text(
+  //               KReleaseMode?
+  //             )
+  //           ],
+  //         ),
+  //       ),
+  //     ),
+  //   );
+  // };
   SqlHelper.getDatabase();
   runApp(const MyApp());
 }
